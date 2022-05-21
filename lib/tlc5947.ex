@@ -7,8 +7,8 @@ defmodule TLC5947 do
   ```
   {:ok, spi} = Circuits.SPI.open("spidev0.0")
   bits = [1, 1, 1, 0, 0, 0]
-  tlc5947_words = TLC5947.to_tlc5947_words(bits)
-  Circuits.SPI.transfer(spi, tlc5947_words)
+  tlc5947 = TLC5947.new(bits: bits)
+  Circuits.SPI.transfer(spi, tlc5947.data)
   ```
 
   ## Data sheet
@@ -17,15 +17,27 @@ defmodule TLC5947 do
 
   """
 
+  defstruct brightness: 0, data: <<>>
+
   @default_brightness 0x060
   @max_brightness 0xFFF
+
+  def new(opts) do
+    bits = Access.fetch!(opts, :bits)
+    brightness = Access.get(opts, :brightness, @default_brightness)
+
+    %__MODULE__{
+      brightness: brightness,
+      data: to_tlc5947_words(bits, brightness)
+    }
+  end
 
   @doc """
   Convert a list of 24 bits to TLC5947 words as bitstring
 
   ## Examples
 
-      iex> TLC5947.to_tlc5947_words([1, 0, 1, 1])
+      iex> TLC5947.to_tlc5947_words([1, 0, 1, 1], 0x060)
       <<96::12, 96::12, 0::12, 96::12, 0::(12 * 20)>>
 
       iex> TLC5947.to_tlc5947_words([1, 1, 1, 1], 0x000)
@@ -35,7 +47,7 @@ defmodule TLC5947 do
       ** (FunctionClauseError) no function clause matching in TLC5947.to_tlc5947_words/2
 
   """
-  def to_tlc5947_words(bits, brightness \\ @default_brightness)
+  def to_tlc5947_words(bits, brightness)
       when is_list(bits) and brightness <= @max_brightness do
     for bit <- bits |> zero_pad_list(24) |> Enum.reverse(), into: <<>> do
       case bit do
