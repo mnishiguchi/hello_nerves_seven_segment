@@ -39,6 +39,7 @@ defmodule HelloNervesSevenSegment.MixProject do
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.11.6", targets: @all_targets},
       {:nerves_pack, "~> 0.6.0", targets: @all_targets},
+      {:circuits_spi, "~> 1.3", targets: @all_targets},
 
       # Dependencies for specific targets
       # NOTE: It's generally low risk and recommended to follow minor version
