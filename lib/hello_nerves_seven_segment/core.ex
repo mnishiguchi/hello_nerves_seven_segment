@@ -1,6 +1,6 @@
 defmodule HelloNervesSevenSegment.Core do
   @moduledoc """
-  The core logic of this app.
+  The core business logic of this project.
 
   ## Examples
 
@@ -45,18 +45,20 @@ defmodule HelloNervesSevenSegment.Core do
 
   def transfer(opts) do
     spi = Access.fetch!(opts, :spi)
-
-    tlc5947 =
-      case brightness = opts[:brightness] do
-        0 ->
-          TLC5947.new(brightness: 0)
-
-        _ ->
-          bits = seven_segment_to_bits(SevenSegment.new(opts))
-          TLC5947.new(bits: bits, brightness: brightness)
-      end
+    tlc5947 = TLC5947.Cache.get_or_insert_by(opts, &build_tls5947/1)
 
     Circuits.SPI.transfer(spi, tlc5947.data)
+  end
+
+  defp build_tls5947(opts) do
+    case brightness = opts[:brightness] do
+      0 ->
+        TLC5947.new(brightness: 0)
+
+      _ ->
+        bits = SevenSegment.new(opts) |> seven_segment_to_bits()
+        TLC5947.new(bits: bits, brightness: brightness)
+    end
   end
 
   @doc """
