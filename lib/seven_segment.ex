@@ -6,6 +6,8 @@ defmodule SevenSegment do
   use Bitwise
 
   @pgfedcba_byte %{
+    nil => 0b0000_0000,
+    ' ' => 0b0000_0000,
     '0' => 0b0011_1111,
     '1' => 0b0000_0110,
     '2' => 0b0101_1011,
@@ -63,9 +65,16 @@ defmodule SevenSegment do
       iex> char_to_pgfedcba('A')
       0b0111_0111
 
+      iex> char_to_pgfedcba(65)
+      ** (RuntimeError) unsupported character: 65
+
   """
   def char_to_pgfedcba(character) when is_list(character) do
     Access.fetch!(@pgfedcba_byte, character)
+  end
+
+  def char_to_pgfedcba(unsupported) do
+    raise("unsupported character: #{inspect(unsupported)}")
   end
 
   @doc """

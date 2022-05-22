@@ -48,6 +48,7 @@ defmodule TLC5947 do
 
       iex> TLC5947.to_tlc5947_words([], 0x060)
       <<0::(12 * 24)>>
+
   """
   def to_tlc5947_words(bits, brightness)
       when is_list(bits) and brightness <= @max_brightness do

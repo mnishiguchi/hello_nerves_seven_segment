@@ -18,6 +18,19 @@ defmodule HelloNervesSevenSegment.Core do
     10 => :a
   }
 
+  def show_digits(opts) do
+    spi = Access.fetch!(opts, :spi)
+    gpio = Access.fetch!(opts, :gpio)
+    character = Access.fetch!(opts, :character)
+    on_time_ms = Access.fetch!(opts, :on_time_ms)
+    brightness = opts[:brightness] || 0xFFF
+
+    transfer(spi: spi, brightness: brightness, character: character)
+    Circuits.GPIO.write(gpio, 1)
+    Process.sleep(on_time_ms)
+    Circuits.GPIO.write(gpio, 0)
+  end
+
   def transfer(opts) do
     spi = Access.fetch!(opts, :spi)
     tlc5947 = TLC5947Cache.get_or_insert_by(opts, &build_tls5947/1)
