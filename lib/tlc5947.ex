@@ -24,7 +24,7 @@ defmodule TLC5947 do
 
   def new(opts) do
     bits = Access.fetch!(opts, :bits)
-    brightness = Access.get(opts, :brightness, @default_brightness)
+    brightness = opts[:brightness] || @default_brightness
 
     %__MODULE__{
       brightness: brightness,

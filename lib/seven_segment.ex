@@ -26,37 +26,21 @@ defmodule SevenSegment do
 
   @decimal_point_mask 0b1000_0000
 
-  @display_keys ~w(display1 display2 display3 display4)a
-
   defstruct character: nil,
             display_type: nil,
-            pgfedcba: %{},
-            enabled: %{}
+            pgfedcba: %{}
 
   def new(opts) do
     character = Access.fetch!(opts, :character)
     display_type = Access.fetch!(opts, :display_type)
     with_dot = Access.get(opts, :with_dot, false)
-    enabled = Access.get(opts, :enabled, [:display1])
 
     %__MODULE__{
       character: character,
       display_type: display_type,
-      pgfedcba: build_pgfedcba(character, display_type, with_dot),
-      enabled: enable_displays(display_type, enabled)
+      pgfedcba: build_pgfedcba(character, display_type, with_dot)
     }
   end
-
-  defp enable_displays(display_type, enabled) do
-    @display_keys
-    |> Enum.map(& {&1, enable_display(display_type, &1 in enabled)})
-    |> Map.new()
-  end
-
-  defp enable_display(:common_cathode, true), do: 1
-  defp enable_display(:common_cathode, false), do: 0
-  defp enable_display(:common_anode, true), do: 0
-  defp enable_display(:common_anode, false), do: 1
 
   defp build_pgfedcba(character, display_type, with_dot) do
     if with_dot do
