@@ -1,4 +1,4 @@
-defmodule TLC5947.Cache do
+defmodule HelloNervesSevenSegment.TLC5947Cache do
   @moduledoc false
 
   use Agent
@@ -24,8 +24,10 @@ defmodule TLC5947.Cache do
   end
 
   defp get_by(params) do
-    value = Agent.get(__MODULE__, &get_in(&1, [build_cache_key(params)]))
-    value.tlc5947
+    case Agent.get(__MODULE__, &get_in(&1, [build_cache_key(params)])) do
+      nil -> nil
+      value -> value.tlc5947
+    end
   end
 
   defp save(params, tlc5947) do

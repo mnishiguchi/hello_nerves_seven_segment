@@ -30,6 +30,8 @@ defmodule HelloNervesSevenSegment.Core do
   ```
   """
 
+  alias HelloNervesSevenSegment.TLC5947Cache
+
   @supported_characters [?0..?9, ?A..?F] |> Enum.concat() |> Enum.map(&[&1])
 
   @tlc5947_channel_to_seven_segment_pin %{
@@ -45,7 +47,7 @@ defmodule HelloNervesSevenSegment.Core do
 
   def transfer(opts) do
     spi = Access.fetch!(opts, :spi)
-    tlc5947 = TLC5947.Cache.get_or_insert_by(opts, &build_tls5947/1)
+    tlc5947 = TLC5947Cache.get_or_insert_by(opts, &build_tls5947/1)
 
     Circuits.SPI.transfer(spi, tlc5947.data)
   end

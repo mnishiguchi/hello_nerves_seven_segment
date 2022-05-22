@@ -16,7 +16,7 @@ defmodule HelloNervesSevenSegment.Application do
         # Children for all targets
         # Starts a worker by calling: HelloNervesSevenSegment.Worker.start_link(arg)
         # {HelloNervesSevenSegment.Worker, arg},
-        TLC5947.Cache
+        HelloNervesSevenSegment.TLC5947Cache
       ] ++ children(target())
 
     Supervisor.start_link(children, opts)

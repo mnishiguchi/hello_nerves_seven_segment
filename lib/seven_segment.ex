@@ -60,8 +60,6 @@ defmodule SevenSegment do
 
   ## Examples
 
-      ## Normal
-
       iex> char_to_pgfedcba('A')
       0b0111_0111
 
@@ -86,7 +84,6 @@ defmodule SevenSegment do
 
   """
   def add_dot_to_pgfedcba(pgfedcba) when is_integer(pgfedcba) do
-    # add a flag
     pgfedcba ||| @decimal_point_mask
   end
 
