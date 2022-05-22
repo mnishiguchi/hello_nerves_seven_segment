@@ -1,6 +1,6 @@
 defmodule TLC5947 do
   @moduledoc """
-  A 24-Channel, 12-Bit PWM LED Driver
+  The generic logic for the 24-Channel, 12-Bit PWM LED Driver TLC5947.
 
   ## Examples
 

@@ -8,17 +8,18 @@ defmodule HelloNervesSevenSegment.Core do
   alias HelloNervesSevenSegment.Core
 
   {:ok, spi} = Circuits.SPI.open("spidev0.0")
-  {:ok, enable1} = Circuits.GPIO.open(6, :output)
-  {:ok, enable2} = Circuits.GPIO.open(13, :output)
-  {:ok, enable3} = Circuits.GPIO.open(19, :output)
-  {:ok, enable4} = Circuits.GPIO.open(26, :output)
+
+  {:ok, digit1} = Circuits.GPIO.open(6, :output)
+  {:ok, digit2} = Circuits.GPIO.open(13, :output)
+  {:ok, digit3} = Circuits.GPIO.open(19, :output)
+  {:ok, digit4} = Circuits.GPIO.open(26, :output)
 
   test_fn = fn ->
     for _ <- 0..999,
-        {character, gpio} <- [{'1', enable2}, {'0', enable3}, {'0', enable4}] do
+        {character, gpio} <- [{'1', digit2}, {'0', digit3}, {'0', digit4}] do
       Circuits.GPIO.write(gpio, 1)
-      Core.transfer(spi: spi, brightness: 0xFFF, character: character, display_type: :common_cathode)
-      :timer.sleep(1)
+      Core.transfer(spi: spi, brightness: 0xFFF, character: character)
+      Process.sleep(1)
       Core.transfer(spi: spi, brightness: 0x000)
       Circuits.GPIO.write(gpio, 0)
     end
@@ -75,7 +76,7 @@ defmodule HelloNervesSevenSegment.Core do
 
   ## Examples
 
-      iex> seven_segment_to_bits(SevenSegment.new(character: 'F', display_type: :common_cathode))
+      iex> SevenSegment.new(character: 'F') |> seven_segment_to_bits()
       [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
   """

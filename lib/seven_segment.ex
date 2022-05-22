@@ -1,11 +1,11 @@
 defmodule SevenSegment do
   @moduledoc """
-  The seven-segment display core logic.
+  The generic logic for a seven-segment display.
   """
 
   use Bitwise
 
-  @pgfedcba_byte_common_cathode %{
+  @pgfedcba_byte %{
     '0' => 0b0011_1111,
     '1' => 0b0000_0110,
     '2' => 0b0101_1011,
@@ -27,70 +27,53 @@ defmodule SevenSegment do
   @decimal_point_mask 0b1000_0000
 
   defstruct character: nil,
-            display_type: nil,
+            bit_flip: false,
             pgfedcba: %{}
 
   def new(opts) do
     character = Access.fetch!(opts, :character)
-    display_type = Access.fetch!(opts, :display_type)
+    bit_flip = Access.get(opts, :bit_flip, false)
     with_dot = Access.get(opts, :with_dot, false)
 
     %__MODULE__{
       character: character,
-      display_type: display_type,
-      pgfedcba: build_pgfedcba(character, display_type, with_dot)
+      bit_flip: bit_flip,
+      pgfedcba: build_pgfedcba(character, with_dot, bit_flip)
     }
   end
 
-  defp build_pgfedcba(character, display_type, with_dot) do
-    if with_dot do
-      character
-      |> char_to_pgfedcba(display_type)
-      |> add_dot_to_pgfedcba(display_type)
-      |> pgfedcba_to_map()
-    else
-      character
-      |> char_to_pgfedcba(display_type)
-      |> pgfedcba_to_map()
-    end
+  defp build_pgfedcba(character, with_dot, bit_flip) do
+    character
+    |> char_to_pgfedcba()
+    |> maybe_add_dot_to_pgfedcba(with_dot)
+    |> pgfedcba_to_map()
+    |> maybe_flip_bits(bit_flip)
   end
+
+  defp maybe_add_dot_to_pgfedcba(pgfedcba, false), do: pgfedcba
+  defp maybe_add_dot_to_pgfedcba(pgfedcba, true), do: add_dot_to_pgfedcba(pgfedcba)
+  defp maybe_flip_bits(byte, false), do: byte
+  defp maybe_flip_bits(byte, true), do: bxor(byte, 0b1111_1111)
 
   @doc """
   Converts a character to the GFEDCBA byte
 
   ## Examples
 
-      ## Common cathode
+      ## Normal
 
-      iex> char_to_pgfedcba('A', :common_cathode)
+      iex> char_to_pgfedcba('A')
       0b0111_0111
 
-      iex> char_to_pgfedcba('A', :common_cathode) |> add_dot_to_pgfedcba(:common_cathode)
+      iex> char_to_pgfedcba('A') |> add_dot_to_pgfedcba()
       0b1111_0111
 
-      iex> char_to_pgfedcba('A', :common_cathode) |> add_dot_to_pgfedcba(:common_cathode) |> pgfedcba_to_map
+      iex> char_to_pgfedcba('A') |> add_dot_to_pgfedcba() |> pgfedcba_to_map
       %{a: 1, b: 1, c: 1, d: 0, e: 1, f: 1, g: 1, p: 1}
 
-      ## Common anode
-
-      iex> char_to_pgfedcba('A', :common_anode)
-      0b1000_1000
-
-      iex> char_to_pgfedcba('A', :common_anode) |> add_dot_to_pgfedcba(:common_anode)
-      0b0000_1000
-
-      iex> char_to_pgfedcba('A', :common_anode) |> add_dot_to_pgfedcba(:common_anode) |> pgfedcba_to_map
-      %{a: 0, b: 0, c: 0, d: 1, e: 0, f: 0, g: 0, p: 0}
-
   """
-  def char_to_pgfedcba(char, type) when is_list(char) do
-    case type do
-      :common_cathode ->
-        Access.fetch!(@pgfedcba_byte_common_cathode, char)
-
-      :common_anode ->
-        Access.fetch!(@pgfedcba_byte_common_cathode, char) |> bxor(0b1111_1111)
-    end
+  def char_to_pgfedcba(character) when is_list(character) do
+    Access.fetch!(@pgfedcba_byte, character)
   end
 
   @doc """
@@ -98,23 +81,13 @@ defmodule SevenSegment do
 
   ## Examples
 
-      iex> add_dot_to_pgfedcba(0b0000_0111, :common_cathode)
+      iex> add_dot_to_pgfedcba(0b0000_0111)
       0b1000_0111
 
-      iex> add_dot_to_pgfedcba(0b1111_1000, :common_anode)
-      0b0111_1000
-
   """
-  def add_dot_to_pgfedcba(pgfedcba, type) when is_integer(pgfedcba) do
-    case type do
-      :common_cathode ->
-        # add a flag
-        pgfedcba ||| @decimal_point_mask
-
-      :common_anode ->
-        # remove a flag
-        pgfedcba &&& ~~~@decimal_point_mask
-    end
+  def add_dot_to_pgfedcba(pgfedcba) when is_integer(pgfedcba) do
+    # add a flag
+    pgfedcba ||| @decimal_point_mask
   end
 
   @doc """
