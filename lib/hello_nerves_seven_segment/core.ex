@@ -1,33 +1,6 @@
 defmodule HelloNervesSevenSegment.Core do
   @moduledoc """
   The core business logic of this project.
-
-  ## Examples
-
-  ```
-  alias HelloNervesSevenSegment.Core
-
-  {:ok, spi} = Circuits.SPI.open("spidev0.0")
-
-  {:ok, digit1} = Circuits.GPIO.open(6, :output)
-  {:ok, digit2} = Circuits.GPIO.open(13, :output)
-  {:ok, digit3} = Circuits.GPIO.open(19, :output)
-  {:ok, digit4} = Circuits.GPIO.open(26, :output)
-
-  test_fn = fn ->
-    for _ <- 0..999,
-        {character, gpio} <- [{'1', digit2}, {'0', digit3}, {'0', digit4}] do
-      Circuits.GPIO.write(gpio, 1)
-      Core.transfer(spi: spi, brightness: 0xFFF, character: character)
-      Process.sleep(1)
-      Core.transfer(spi: spi, brightness: 0x000)
-      Circuits.GPIO.write(gpio, 0)
-    end
-  end
-
-  test_fn.()
-
-  ```
   """
 
   alias HelloNervesSevenSegment.TLC5947Cache
