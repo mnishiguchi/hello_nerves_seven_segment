@@ -22,6 +22,10 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     GenServer.stop(__MODULE__)
   end
 
+  def set_characters(characters) when is_tuple(characters) and tuple_size(characters) == 4 do
+    GenServer.call(__MODULE__, {:set_characters, characters})
+  end
+
   @impl GenServer
   def init(opts) do
     characters = opts[:characters] || {'1', '2', '3', '4'}
@@ -66,6 +70,13 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     send(self(), :tick)
 
     {:noreply, %{state | index: next_index(state)}}
+  end
+
+  @impl GenServer
+  def handle_call({:set_characters, characters}, _from, state) do
+    state = %{state | characters: characters}
+
+    {:reply, :ok, state}
   end
 
   defp next_index(%{index: 0}), do: 1
