@@ -17,9 +17,9 @@ defmodule HelloNervesSevenSegment.Core do
     for _ <- 0..999,
         {character, gpio} <- [{'1', enable2}, {'0', enable3}, {'0', enable4}] do
       Circuits.GPIO.write(gpio, 1)
-      Core.transfer(spi: spi, character: character, display_type: :common_cathode, brightness: 0xFFF)
-      :timer.sleep(2)
-      Core.transfer(spi: spi, character: character, display_type: :common_cathode, brightness: 0x000)
+      Core.transfer(spi: spi, brightness: 0xFFF, character: character, display_type: :common_cathode)
+      :timer.sleep(1)
+      Core.transfer(spi: spi, brightness: 0x000)
       Circuits.GPIO.write(gpio, 0)
     end
   end
@@ -44,8 +44,17 @@ defmodule HelloNervesSevenSegment.Core do
 
   def transfer(opts) do
     spi = Access.fetch!(opts, :spi)
-    bits = seven_segment_to_bits(SevenSegment.new(opts))
-    tlc5947 = TLC5947.new(bits: bits, brightness: opts[:brightness])
+
+    tlc5947 =
+      case brightness = opts[:brightness] do
+        0 ->
+          TLC5947.new(brightness: 0)
+
+        _ ->
+          bits = seven_segment_to_bits(SevenSegment.new(opts))
+          TLC5947.new(bits: bits, brightness: brightness)
+      end
+
     Circuits.SPI.transfer(spi, tlc5947.data)
   end
 

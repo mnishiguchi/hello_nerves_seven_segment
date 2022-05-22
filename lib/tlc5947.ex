@@ -23,7 +23,7 @@ defmodule TLC5947 do
   @max_brightness 0xFFF
 
   def new(opts) do
-    bits = Access.fetch!(opts, :bits)
+    bits = opts[:bits] || []
     brightness = opts[:brightness] || @default_brightness
 
     %__MODULE__{
@@ -41,11 +41,13 @@ defmodule TLC5947 do
       <<96::12, 96::12, 0::12, 96::12, 0::(12 * 20)>>
 
       iex> TLC5947.to_tlc5947_words([1, 1, 1, 1], 0x000)
-      <<0::12, 0::12, 0::12, 0::12, 0::(12 * 20)>>
+      <<0::(12 * 24)>>
 
       iex> TLC5947.to_tlc5947_words([1, 1, 1], 0xfff + 1)
       ** (FunctionClauseError) no function clause matching in TLC5947.to_tlc5947_words/2
 
+      iex> TLC5947.to_tlc5947_words([], 0x060)
+      <<0::(12 * 24)>>
   """
   def to_tlc5947_words(bits, brightness)
       when is_list(bits) and brightness <= @max_brightness do
