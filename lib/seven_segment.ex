@@ -63,12 +63,6 @@ defmodule SevenSegment do
       iex> char_to_pgfedcba('A')
       0b0111_0111
 
-      iex> char_to_pgfedcba('A') |> add_dot_to_pgfedcba()
-      0b1111_0111
-
-      iex> char_to_pgfedcba('A') |> add_dot_to_pgfedcba() |> pgfedcba_to_map
-      %{a: 1, b: 1, c: 1, d: 0, e: 1, f: 1, g: 1, p: 1}
-
   """
   def char_to_pgfedcba(character) when is_list(character) do
     Access.fetch!(@pgfedcba_byte, character)
