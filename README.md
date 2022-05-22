@@ -1,6 +1,8 @@
 # HelloNervesSevenSegment
 
-**TODO: Add description**
+![20220520_092920](https://user-images.githubusercontent.com/7563926/169630607-fa34f13b-e280-46d1-a50b-8c4abb845a1e.jpg)
+
+![20220521_220047](https://user-images.githubusercontent.com/7563926/169675977-6ac370e0-941a-486c-8082-f1ec1710aa88.jpg)
 
 ## Targets
 
