@@ -1,13 +1,6 @@
 defmodule HelloNervesSevenSegment.DisplayServer do
   @moduledoc """
-  ## Examples
-
-  ```
-  alias HelloNervesSevenSegment.DisplayServer
-
-  DisplayServer.start_link
-  DisplayServer.stop
-  ```
+  A server that controls the display state.
   """
 
   use GenServer
@@ -22,13 +15,13 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     GenServer.stop(__MODULE__)
   end
 
-  def set_characters(characters) when is_tuple(characters) and tuple_size(characters) == 4 do
+  def set_characters(characters) do
     GenServer.call(__MODULE__, {:set_characters, characters})
   end
 
   @impl GenServer
   def init(opts) do
-    characters = opts[:characters] || {'1', '2', '3', '4'}
+    characters = opts[:characters] || ~w[1 2 3 4]
     spi_bus_name = opts[:spi_bus_name] || "spidev0.0"
     gpio_pin1 = opts[:gpio_pin1] || 6
     gpio_pin2 = opts[:gpio_pin2] || 13
@@ -44,7 +37,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     state = %{
       spi: spi,
       gpio: {gpio1, gpio2, gpio3, gpio4},
-      characters: characters,
+      characters: normalize_characters(characters),
       index: 0
     }
 
@@ -74,13 +67,15 @@ defmodule HelloNervesSevenSegment.DisplayServer do
 
   @impl GenServer
   def handle_call({:set_characters, characters}, _from, state) do
-    state = %{state | characters: characters}
-
-    {:reply, :ok, state}
+    {:reply, :ok, %{state | characters: normalize_characters(characters)}}
   end
 
   defp next_index(%{index: 0}), do: 1
   defp next_index(%{index: 1}), do: 2
   defp next_index(%{index: 2}), do: 3
   defp next_index(%{index: 3}), do: 0
+
+  defp normalize_characters(x) when is_list(x), do: List.to_tuple(x)
+  defp normalize_characters(x) when tuple_size(x) == 4, do: x
+  defp normalize_characters(_), do: raise("unsupported characters")
 end

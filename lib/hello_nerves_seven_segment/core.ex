@@ -5,8 +5,6 @@ defmodule HelloNervesSevenSegment.Core do
 
   alias HelloNervesSevenSegment.TLC5947Cache
 
-  @supported_characters [?0..?9, ?A..?F] |> Enum.concat() |> Enum.map(&[&1])
-
   @tlc5947_channel_to_seven_segment_pin %{
     0 => :e,
     1 => :d,
@@ -48,17 +46,6 @@ defmodule HelloNervesSevenSegment.Core do
         TLC5947.new(bits: bits, brightness: brightness)
     end
   end
-
-  @doc """
-  A list of the characters that this project currently supports.
-
-  ## Examples
-
-      iex> supported_characters()
-      ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
-
-  """
-  def supported_characters, do: @supported_characters
 
   @doc """
   Map a SevenSegment struct to bits. The list position corresponds to the

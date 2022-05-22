@@ -5,11 +5,18 @@ defmodule HelloNervesSevenSegment do
 
   alias HelloNervesSevenSegment.DisplayServer
 
-  def start_demo do
-    DisplayServer.start_link()
+  @spec start_link(keyword) :: GenServer.on_start()
+  def start_link(opts \\ []) do
+    DisplayServer.start_link(opts)
   end
 
-  def stop_demo do
+  @spec stop :: :ok
+  def stop do
     DisplayServer.stop()
+  end
+
+  @spec set_characters(list | tuple) :: any
+  def set_characters(characters) do
+    DisplayServer.set_characters(characters)
   end
 end
