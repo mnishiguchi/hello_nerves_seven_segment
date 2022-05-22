@@ -5,10 +5,10 @@ defmodule HelloNervesSevenSegment do
 
   alias HelloNervesSevenSegment.Core
 
-  def demo(repeat_n \\ 500) do
+  def demo(repeat_n \\ 50) do
     {:ok, spi} = Circuits.SPI.open("spidev0.0")
 
-    {:ok, _digit1} = Circuits.GPIO.open(6, :output)
+    # {:ok, digit1} = Circuits.GPIO.open(6, :output)
     {:ok, digit2} = Circuits.GPIO.open(13, :output)
     {:ok, digit3} = Circuits.GPIO.open(19, :output)
     {:ok, digit4} = Circuits.GPIO.open(26, :output)
@@ -18,9 +18,8 @@ defmodule HelloNervesSevenSegment do
       Core.transfer(spi: spi, brightness: 0xFFF, character: character)
       Circuits.GPIO.write(gpio, 1)
 
-      Process.sleep(1)
+      Process.sleep(7)
 
-      Core.transfer(spi: spi, brightness: 0x000)
       Circuits.GPIO.write(gpio, 0)
     end
   end
