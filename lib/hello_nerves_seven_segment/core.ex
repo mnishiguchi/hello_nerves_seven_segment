@@ -8,15 +8,24 @@ defmodule HelloNervesSevenSegment.Core do
   alias HelloNervesSevenSegment.Core
 
   {:ok, spi} = Circuits.SPI.open("spidev0.0")
+  {:ok, enable1} = Circuits.GPIO.open(6, :output)
+  {:ok, enable2} = Circuits.GPIO.open(13, :output)
+  {:ok, enable3} = Circuits.GPIO.open(19, :output)
+  {:ok, enable4} = Circuits.GPIO.open(26, :output)
 
   test_fn = fn ->
-    for character <- Core.supported_characters() do
-      Core.transfer(spi: spi, character: character, display_type: :common_cathode)
-      :timer.sleep(500)
+    for _ <- 0..999,
+        {character, gpio} <- [{'1', enable2}, {'0', enable3}, {'0', enable4}] do
+      Circuits.GPIO.write(gpio, 1)
+      Core.transfer(spi: spi, character: character, display_type: :common_cathode, brightness: 0xFFF)
+      :timer.sleep(2)
+      Core.transfer(spi: spi, character: character, display_type: :common_cathode, brightness: 0x000)
+      Circuits.GPIO.write(gpio, 0)
     end
   end
 
   test_fn.()
+
   ```
   """
 
