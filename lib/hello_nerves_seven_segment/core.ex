@@ -5,17 +5,6 @@ defmodule HelloNervesSevenSegment.Core do
 
   alias HelloNervesSevenSegment.TLC5947Cache
 
-  @tlc5947_channel_to_seven_segment_pin %{
-    0 => :e,
-    1 => :d,
-    2 => :p,
-    3 => :c,
-    4 => :g,
-    6 => :b,
-    9 => :f,
-    10 => :a
-  }
-
   def show_digits(opts) do
     spi = Access.fetch!(opts, :spi)
     gpio = Access.fetch!(opts, :gpio)
@@ -47,21 +36,17 @@ defmodule HelloNervesSevenSegment.Core do
     end
   end
 
-  @doc """
-  Map a SevenSegment struct to bits. The list position corresponds to the
-  TLC5947 channels.
-
-  ## Examples
-
-      iex> SevenSegment.new(character: 'F') |> seven_segment_to_bits()
-      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-  """
-  def seven_segment_to_bits(seven_segment) do
+  defp seven_segment_to_bits(seven_segment) do
     0..23
-    |> Enum.map(fn ch ->
-      seven_segment_pin = @tlc5947_channel_to_seven_segment_pin[ch] || :ignore
+    |> Enum.map(fn tlc5947_channel ->
+      seven_segment_pin = seven_segment_pin(tlc5947_channel)
       seven_segment.pgfedcba[seven_segment_pin] || 0
     end)
+  end
+
+  defp seven_segment_pin(tlc5947_channel) when is_integer(tlc5947_channel) do
+    Application.get_env(:hello_nerves_seven_segment, :tlc5947_channel_to_seven_segment_pin, [])
+    |> Enum.into(%{})
+    |> Access.get(tlc5947_channel, :ignore)
   end
 end

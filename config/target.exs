@@ -1,5 +1,24 @@
 import Config
 
+config :hello_nerves_seven_segment,
+  brightness: 0x060,
+  characters: ~w[1 2 3 4],
+  gpio_pin1: 6,
+  gpio_pin2: 13,
+  gpio_pin3: 19,
+  gpio_pin4: 26,
+  spi_bus_name: "spidev0.0",
+  tlc5947_channel_to_seven_segment_pin: %{
+    0 => :e,
+    1 => :d,
+    2 => :p,
+    3 => :c,
+    4 => :g,
+    6 => :b,
+    9 => :f,
+    10 => :a
+  }
+
 # Use shoehorn to start the main application. See the shoehorn
 # docs for separating out critical OTP applications such as those
 # involved with firmware updates.

@@ -25,13 +25,15 @@ defmodule HelloNervesSevenSegment.DisplayServer do
 
   @impl GenServer
   def init(opts) do
-    characters = opts[:characters] || ~w[1 2 3 4]
-    spi_bus_name = opts[:spi_bus_name] || "spidev0.0"
-    gpio_pin1 = opts[:gpio_pin1] || 6
-    gpio_pin2 = opts[:gpio_pin2] || 13
-    gpio_pin3 = opts[:gpio_pin3] || 19
-    gpio_pin4 = opts[:gpio_pin4] || 26
-    brightness = opts[:brightness] || 0x060
+    env = Application.get_all_env(:hello_nerves_seven_segment)
+
+    characters = opts[:characters] || env[:characters]
+    spi_bus_name = opts[:spi_bus_name] || env[:spi_bus_name]
+    gpio_pin1 = opts[:gpio_pin1] || env[:gpio_pin1]
+    gpio_pin2 = opts[:gpio_pin2] || env[:gpio_pin2]
+    gpio_pin3 = opts[:gpio_pin3] || env[:gpio_pin3]
+    gpio_pin4 = opts[:gpio_pin4] || env[:gpio_pin4]
+    brightness = opts[:brightness] || env[:brightness]
 
     {:ok, spi} = Circuits.SPI.open(spi_bus_name)
     {:ok, gpio1} = Circuits.GPIO.open(gpio_pin1, :output)
