@@ -19,6 +19,10 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     GenServer.call(__MODULE__, {:set_characters, characters})
   end
 
+  def set_brightness(brightness) when brightness in 0x000..0xFFF do
+    GenServer.call(__MODULE__, {:set_brightness, brightness})
+  end
+
   @impl GenServer
   def init(opts) do
     characters = opts[:characters] || ~w[1 2 3 4]
@@ -27,6 +31,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     gpio_pin2 = opts[:gpio_pin2] || 13
     gpio_pin3 = opts[:gpio_pin3] || 19
     gpio_pin4 = opts[:gpio_pin4] || 26
+    brightness = opts[:brightness] || 0x060
 
     {:ok, spi} = Circuits.SPI.open(spi_bus_name)
     {:ok, gpio1} = Circuits.GPIO.open(gpio_pin1, :output)
@@ -35,6 +40,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     {:ok, gpio4} = Circuits.GPIO.open(gpio_pin4, :output)
 
     state = %{
+      brightness: brightness,
       spi: spi,
       gpio: {gpio1, gpio2, gpio3, gpio4},
       characters: normalize_characters(characters),
@@ -54,6 +60,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
   @impl GenServer
   def handle_info(:tick, state) do
     Core.show_digits(
+      brightness: state.brightness,
       spi: state.spi,
       gpio: state.gpio |> elem(state.index),
       character: state.characters |> elem(state.index),
@@ -68,6 +75,11 @@ defmodule HelloNervesSevenSegment.DisplayServer do
   @impl GenServer
   def handle_call({:set_characters, characters}, _from, state) do
     {:reply, :ok, %{state | characters: normalize_characters(characters)}}
+  end
+
+  @impl GenServer
+  def handle_call({:set_brightness, brightness}, _from, state) do
+    {:reply, :ok, %{state | brightness: brightness}}
   end
 
   defp next_index(%{index: 0}), do: 1

@@ -19,4 +19,9 @@ defmodule HelloNervesSevenSegment do
   def set_characters(characters) do
     DisplayServer.set_characters(characters)
   end
+
+  @spec set_brightness(0x000..0xFFF) :: any
+  def set_brightness(brightness) do
+    DisplayServer.set_brightness(brightness)
+  end
 end
