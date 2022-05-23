@@ -5,7 +5,7 @@ defmodule SevenSegment do
 
   use Bitwise
 
-  @pgfedcba_byte %{
+  @character_to_pgfedcba_byte %{
     # blank
     nil => 0b0000_0000,
     ' ' => 0b0000_0000,
@@ -63,7 +63,7 @@ defmodule SevenSegment do
 
   defp build_pgfedcba(character, bit_flip) do
     character
-    |> char_to_pgfedcba_byte()
+    |> character_to_pgfedcba_byte()
     |> maybe_flip_bits(bit_flip)
     |> pgfedcba_to_map()
   end
@@ -76,19 +76,12 @@ defmodule SevenSegment do
 
   ## Examples
 
-      iex> char_to_pgfedcba_byte('A')
+      iex> character_to_pgfedcba_byte('A')
       0b0111_0111
 
-      iex> char_to_pgfedcba_byte(65)
-      ** (RuntimeError) unsupported character: 65
-
   """
-  def char_to_pgfedcba_byte(character) when is_list(character) do
-    Access.fetch!(@pgfedcba_byte, character)
-  end
-
-  def char_to_pgfedcba_byte(unsupported) do
-    raise("unsupported character: #{inspect(unsupported)}")
+  def character_to_pgfedcba_byte(character) do
+    Access.fetch!(@character_to_pgfedcba_byte, character)
   end
 
   @doc """
