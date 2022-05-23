@@ -36,6 +36,7 @@ defmodule HelloNervesSevenSegment.Application do
       # Children for all targets except host
       # Starts a worker by calling: HelloNervesSevenSegment.Worker.start_link(arg)
       # {HelloNervesSevenSegment.Worker, arg},
+      HelloNervesSevenSegment.HexadecimalClockSupervisor
     ]
   end
 

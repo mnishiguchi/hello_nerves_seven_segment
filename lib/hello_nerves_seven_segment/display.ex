@@ -1,7 +1,5 @@
-defmodule HelloNervesSevenSegment.Core do
-  @moduledoc """
-  The core business logic of this project.
-  """
+defmodule HelloNervesSevenSegment.Display do
+  @moduledoc false
 
   alias HelloNervesSevenSegment.TLC5947Cache
 

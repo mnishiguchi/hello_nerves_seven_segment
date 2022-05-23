@@ -2,3 +2,11 @@ NervesMOTD.print()
 
 # Add Toolshed helpers to the IEx session
 use Toolshed
+
+alias HelloNervesSevenSegment.Display
+alias HelloNervesSevenSegment.DisplayServer
+alias HelloNervesSevenSegment.HexadecimalClock
+alias HelloNervesSevenSegment.HexadecimalClockServer
+alias HelloNervesSevenSegment.HexadecimalClockSupervisor
+alias HelloNervesSevenSegment.Supervisor
+alias HelloNervesSevenSegment.TLC5947Cache

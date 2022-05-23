@@ -1,11 +1,11 @@
 defmodule HelloNervesSevenSegment.DisplayServer do
-  @moduledoc """
-  A server that controls the display state.
-  """
+  @moduledoc false
 
   use GenServer
 
-  alias HelloNervesSevenSegment.Core
+  alias HelloNervesSevenSegment.Display
+
+  @inverval_ms 5
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -61,12 +61,12 @@ defmodule HelloNervesSevenSegment.DisplayServer do
 
   @impl GenServer
   def handle_info(:tick, state) do
-    Core.show_digits(
+    Display.show_digits(
       brightness: state.brightness,
       spi: state.spi,
       gpio: state.gpio |> elem(state.index),
       character: state.characters |> elem(state.index),
-      on_time_ms: 5
+      on_time_ms: @inverval_ms
     )
 
     send(self(), :tick)
@@ -91,5 +91,6 @@ defmodule HelloNervesSevenSegment.DisplayServer do
 
   defp normalize_characters(x) when is_list(x), do: List.to_tuple(x)
   defp normalize_characters(x) when tuple_size(x) == 4, do: x
+  defp normalize_characters(<<a::utf8, b::utf8, c::utf8, d::utf8>>), do: {[a], [b], [c], [d]}
   defp normalize_characters(_), do: raise("unsupported characters")
 end

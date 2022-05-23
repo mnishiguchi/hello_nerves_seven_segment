@@ -71,7 +71,7 @@ defmodule TLC5947 do
 
   """
   @spec zero_pad_list([non_neg_integer], non_neg_integer) :: [0 | 1]
-  def zero_pad_list(numbers, total_length \\ 6) do
+  def zero_pad_list(numbers, total_length \\ 24) do
     padding = List.duplicate(0, total_length - length(numbers))
     padding ++ numbers
   end
