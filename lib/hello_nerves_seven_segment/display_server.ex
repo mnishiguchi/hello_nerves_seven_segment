@@ -61,13 +61,13 @@ defmodule HelloNervesSevenSegment.DisplayServer do
 
   @impl GenServer
   def handle_info(:tick, state) do
-    Display.show_digits(
+    Display.new(
       brightness: state.brightness,
       spi: state.spi,
       gpio: state.gpio |> elem(state.index),
-      character: state.characters |> elem(state.index),
       on_time_ms: @inverval_ms
     )
+    |> Display.show_character(state.characters |> elem(state.index))
 
     send(self(), :tick)
 
