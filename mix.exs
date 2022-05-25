@@ -37,6 +37,7 @@ defmodule HelloNervesSevenSegment.MixProject do
       {:toolshed, "~> 0.2.13"},
       {:mox, "~> 1.0", only: :test},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:nerves_time_zones, "~> 0.1"},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.11.6", targets: @all_targets},

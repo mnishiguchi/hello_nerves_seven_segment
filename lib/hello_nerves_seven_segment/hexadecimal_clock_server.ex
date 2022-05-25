@@ -33,7 +33,7 @@ defmodule HelloNervesSevenSegment.HexadecimalClockServer do
   end
 
   defp update_display() do
-    Time.utc_now()
+    NaiveDateTime.local_now
     |> HexadecimalClock.new()
     |> HexadecimalClock.clock_face()
     |> DisplayServer.set_characters()

@@ -10,6 +10,8 @@ Application.start(:nerves_bootstrap)
 
 config :hello_nerves_seven_segment, target: Mix.target()
 
+config :nerves_time_zones, default_time_zone: "America/New_York"
+
 # Customize non-Elixir parts of the firmware. See
 # https://hexdocs.pm/nerves/advanced-configuration.html for details.
 
