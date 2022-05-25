@@ -11,7 +11,7 @@ defmodule HelloNervesSevenSegment.Display do
   def new(opts) do
     spi = Access.fetch!(opts, :spi)
     gpio = Access.fetch!(opts, :gpio)
-    on_time_ms = Access.fetch!(opts, :on_time_ms)
+    on_time_ms = opts[:on_time_ms] || 5
     brightness = opts[:brightness] || 0x111
 
     %__MODULE__{
@@ -26,17 +26,14 @@ defmodule HelloNervesSevenSegment.Display do
   Shows a specified character on the display.
   """
   def show_character(%__MODULE__{} = display, character) do
-    transfer(spi: display.spi, brightness: display.brightness, character: character)
-    Circuits.GPIO.write(display.gpio, 1)
+    params = %{brightness: display.brightness, character: character}
+    tlc5947 = TLC5947Cache.get_or_insert_by(params, &build_tls5947/1)
+
+    spi_mod().transfer(display.spi, tlc5947.data)
+    gpio_mod().write(display.gpio, 1)
     Process.sleep(display.on_time_ms)
-    Circuits.GPIO.write(display.gpio, 0)
-  end
-
-  defp transfer(opts) do
-    spi = Access.fetch!(opts, :spi)
-    tlc5947 = TLC5947Cache.get_or_insert_by(opts, &build_tls5947/1)
-
-    Circuits.SPI.transfer(spi, tlc5947.data)
+    gpio_mod().write(display.gpio, 0)
+    :ok
   end
 
   defp build_tls5947(opts) do
@@ -63,4 +60,7 @@ defmodule HelloNervesSevenSegment.Display do
     |> Enum.into(%{})
     |> Access.get(tlc5947_channel, :ignore)
   end
+
+  defp spi_mod(), do: Application.fetch_env!(:hello_nerves_seven_segment, :spi_mod)
+  defp gpio_mod(), do: Application.fetch_env!(:hello_nerves_seven_segment, :gpio_mod)
 end

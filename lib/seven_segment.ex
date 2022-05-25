@@ -50,6 +50,24 @@ defmodule SevenSegment do
             bit_flip: false,
             pgfedcba: %{}
 
+  @doc """
+  ## Examples
+
+      iex> SevenSegment.new(character: 'A')
+      %SevenSegment{
+        bit_flip: false,
+        character: 'A',
+        pgfedcba: %{a: 1, b: 1, c: 1, d: 0, e: 1, f: 1, g: 1, p: 0}
+      }
+
+      iex> new(character: 'A', bit_flip: true)
+      %SevenSegment{
+        bit_flip: true,
+        character: 'A',
+        pgfedcba: %{a: 0, b: 0, c: 0, d: 1, e: 0, f: 0, g: 0, p: 1}
+      }
+
+  """
   def new(opts) do
     character = Access.fetch!(opts, :character) |> normalize_character()
     bit_flip = Access.get(opts, :bit_flip, false)

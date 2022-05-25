@@ -6,6 +6,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
   alias HelloNervesSevenSegment.Display
 
   @inverval_ms 5
+  @default_characters "1234"
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -27,7 +28,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
   def init(opts) do
     env = Application.get_all_env(:hello_nerves_seven_segment)
 
-    characters = opts[:characters] || env[:characters]
+    characters = opts[:characters] || env[:initial_characters] || @default_characters
     spi_bus_name = opts[:spi_bus_name] || env[:spi_bus_name]
     gpio_pin1 = opts[:gpio_pin1] || env[:gpio_pin1]
     gpio_pin2 = opts[:gpio_pin2] || env[:gpio_pin2]
@@ -35,11 +36,11 @@ defmodule HelloNervesSevenSegment.DisplayServer do
     gpio_pin4 = opts[:gpio_pin4] || env[:gpio_pin4]
     brightness = opts[:brightness] || env[:brightness]
 
-    {:ok, spi} = Circuits.SPI.open(spi_bus_name)
-    {:ok, gpio1} = Circuits.GPIO.open(gpio_pin1, :output)
-    {:ok, gpio2} = Circuits.GPIO.open(gpio_pin2, :output)
-    {:ok, gpio3} = Circuits.GPIO.open(gpio_pin3, :output)
-    {:ok, gpio4} = Circuits.GPIO.open(gpio_pin4, :output)
+    {:ok, spi} = spi_mod().open(spi_bus_name)
+    {:ok, gpio1} = gpio_mod().open(gpio_pin1, :output)
+    {:ok, gpio2} = gpio_mod().open(gpio_pin2, :output)
+    {:ok, gpio3} = gpio_mod().open(gpio_pin3, :output)
+    {:ok, gpio4} = gpio_mod().open(gpio_pin4, :output)
 
     state = %{
       brightness: brightness,
@@ -93,4 +94,7 @@ defmodule HelloNervesSevenSegment.DisplayServer do
   defp normalize_characters(x) when tuple_size(x) == 4, do: x
   defp normalize_characters(<<a::utf8, b::utf8, c::utf8, d::utf8>>), do: {[a], [b], [c], [d]}
   defp normalize_characters(_), do: raise("unsupported characters")
+
+  defp spi_mod(), do: Application.fetch_env!(:hello_nerves_seven_segment, :spi_mod)
+  defp gpio_mod(), do: Application.fetch_env!(:hello_nerves_seven_segment, :gpio_mod)
 end

@@ -3,8 +3,14 @@ defmodule HelloNervesSevenSegment.HexadecimalClock do
 
   defstruct ~w[hour second]a
 
-  @doc false
-  def new(%{hour: hour, minute: minute, second: second} \\ Time.utc_now) do
+  @doc """
+  ## Examples
+
+      iex> HexadecimalClock.new(~T[07:20:00])
+      %HexadecimalClock{hour: 7, second: 1200}
+
+  """
+  def new(%{hour: hour, minute: minute, second: second} \\ Time.utc_now()) do
     %__MODULE__{
       hour: hour |> rem(12),
       second: minute * 60 + second

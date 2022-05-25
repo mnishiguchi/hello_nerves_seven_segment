@@ -35,6 +35,8 @@ defmodule HelloNervesSevenSegment.MixProject do
       {:shoehorn, "~> 0.8.0"},
       {:ring_logger, "~> 0.8.3"},
       {:toolshed, "~> 0.2.13"},
+      {:mox, "~> 1.0", only: :test},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
 
       # Dependencies for all targets except :host
       {:nerves_runtime, "~> 0.11.6", targets: @all_targets},

@@ -2,26 +2,32 @@ defmodule TLC5947 do
   @moduledoc """
   The generic logic for the 24-Channel, 12-Bit PWM LED Driver TLC5947.
 
+  [Data sheet](https://cdn-shop.adafruit.com/datasheets/tlc5947.pdf)
+
   ## Examples
 
   ```
   {:ok, spi} = Circuits.SPI.open("spidev0.0")
-  bits = [1, 1, 1, 0, 0, 0]
-  tlc5947 = TLC5947.new(bits: bits)
-  Circuits.SPI.transfer(spi, tlc5947.data)
+  tlc5947 = TLC5947.new(bits: [1, 1, 1, 0, 0, 0])
+  Circuits.SPI.transfer!(spi, tlc5947.data)
   ```
-
-  ## Data sheet
-
-  https://cdn-shop.adafruit.com/datasheets/tlc5947.pdf
-
   """
 
   defstruct brightness: 0, data: <<>>
 
-  @default_brightness 0x060
+  @default_brightness 0x111
   @max_brightness 0xFFF
 
+  @doc """
+  ## Examples
+
+      iex> TLC5947.new(bits: [1, 1, 1], brightness: 0x111)
+      %TLC5947{
+        brightness: 273,
+        data: <<0x111::12, 0x111::12, 0x111::12, 0::(12 * 21)>>
+      }
+
+  """
   def new(opts) do
     bits = opts[:bits] || []
     brightness = opts[:brightness] || @default_brightness
